@@ -20,6 +20,7 @@ jobs:
         run: echo "hello word"
 
   value_changed:
+    if: ${{ github.event.inputs.version }} == 'workflow_dispatch'
     runs-on: ubuntu-22.04
 
     steps:
@@ -34,4 +35,3 @@ jobs:
           value: ${{ inputs.version }}
           commitChange: false
 
-      - run: echo ${{ steps.value_changed.outputs.value}}
