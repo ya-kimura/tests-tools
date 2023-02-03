@@ -1,0 +1,37 @@
+name: test tools
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'test'
+        type: string
+        required: true
+  pull_request:
+
+jobs:
+  test_pr:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Github Checkout
+        uses: actions/checkout@v3
+
+      - name: first test
+        run: echo "hello word"
+
+  value_changed:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Github Checkout
+        uses: actions/checkout@v3
+
+      - name: Update pubspec.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'pubspec.yaml'
+          propertyPath: 'pubspec.yaml.version'
+          value: ${{ inputs.version }}
+          commitChange: false
+
+      - run: echo ${{ outputs.version }}

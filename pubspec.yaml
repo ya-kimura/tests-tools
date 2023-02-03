@@ -1,0 +1,6 @@
+name: my app
+description: A new test project.
+
+publish_to: 'none'
+
+version: 2.0.0+51
