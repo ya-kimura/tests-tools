@@ -34,4 +34,4 @@ jobs:
           value: ${{ inputs.version }}
           commitChange: false
 
-      - run: echo ${{ outputs.version }}
+      - run: echo ${{ steps.value_changed.outputs.value}}
