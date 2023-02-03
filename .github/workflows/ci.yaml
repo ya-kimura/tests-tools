@@ -22,6 +22,7 @@ jobs:
   value_changed:
     if: ${{ github.event.inputs.version }} == 'workflow_dispatch'
     runs-on: ubuntu-22.04
+    needs: test_pr
 
     steps:
       - name: Github Checkout
@@ -34,4 +35,3 @@ jobs:
           propertyPath: 'pubspec.yaml.version'
           value: ${{ inputs.version }}
           commitChange: false
-
