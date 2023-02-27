@@ -36,3 +36,6 @@ jobs:
           value: ${{ inputs.version }}
           commitChange: false
       - run: cat pubspec.yaml
+
+  commitlint:
+    uses: ./.github/workflows/module.commitlint.yaml
