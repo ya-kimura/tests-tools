@@ -6,6 +6,8 @@ on:
         description: 'test'
         type: string
         required: true
+  push:
+    branches: [ main ]
   pull_request:
 
 run-name: Continuous integration for ${{ github.ref_name }} by @${{ github.actor }}
