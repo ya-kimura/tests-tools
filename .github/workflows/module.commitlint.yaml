@@ -1,0 +1,25 @@
+name: Conventional Commits
+
+on:
+  workflow_call:
+    inputs:
+      runnerLabel:
+        required: false
+        type: string
+        default: ubuntu-20.04
+
+jobs:
+  commitlint:
+    name: Validate conventional commits
+    runs-on: ${{ inputs.runnerLabel }}
+    steps:
+      - name: 'checkout code'
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+        env: ${{github.sha}}
+
+      - uses: wagoid/commitlint-github-action@v5
+
+

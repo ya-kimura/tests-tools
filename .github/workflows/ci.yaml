@@ -8,31 +8,20 @@ on:
         required: true
   pull_request:
 
+run-name: Continuous integration for ${{ github.ref_name }} by @${{ github.actor }}
+
+concurrency:
+  group: "ci-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
-  test_pr:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - name: Github Checkout
-        uses: actions/checkout@v3
-
-      - name: first test
-        run: echo "hello word"
-
   value_changed:
-    if: ${{ github.event.inputs.version }} == 'workflow_dispatch'
-    runs-on: ubuntu-22.04
-    needs: test_pr
+   uses: ./.github/workflows/test.value.yaml
+   with:
+    version: ${{ inputs.version }}
 
-    steps:
-      - name: Github Checkout
-        uses: actions/checkout@v3
+  pattern_branch_lints:
+    uses: ./.github/workflows/module.branch.lint.yaml
 
-      - name: Update pubspec.yaml
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'pubspec.yaml'
-          propertyPath: 'version'
-          value: ${{ inputs.version }}
-          commitChange: false
-      - run: cat pubspec.yaml
+  commitlint:
+    uses: ./.github/workflows/module.commitlint.yaml
