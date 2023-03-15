@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   value_changed:
-   uses: ./.github/workflows/module.test.pr.yaml
+   uses: ./.github/workflows/module.test.value.yaml
 
   pattern_branch_lints:
     uses: ./.github/workflows/module.branch.lint.yaml
