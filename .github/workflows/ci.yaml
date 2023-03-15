@@ -18,6 +18,8 @@ concurrency:
 jobs:
   value_changed:
    uses: ./.github/workflows/test.value.yaml
+   with:
+    version: ${{ inputs.version }}
 
   pattern_branch_lints:
     uses: ./.github/workflows/module.branch.lint.yaml
