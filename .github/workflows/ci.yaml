@@ -6,7 +6,6 @@ on:
         description: 'test'
         type: string
         required: true
-        default: '0.2.3+50'
   pull_request:
 
 run-name: Continuous integration for ${{ github.ref_name }} by @${{ github.actor }}
