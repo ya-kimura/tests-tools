@@ -6,25 +6,17 @@ on:
       runnerLabel:
         required: false
         type: string
-        default: ubuntu-22.4
-      node-version:
-        required: false
-        type: string
-        default: lts/*
+        default: ubuntu-20.04
 
 jobs:
   commitlint:
     name: Validate conventional commits
     runs-on: ${{ inputs.runnerLabel }}
-    timeout-minutes: 20
     steps:
       - name: 'checkout code'
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node_version }}
-
-      - uses: wagoid/commitlint-github-action@v4
+      - uses: wagoid/commitlint-github-action@v5
+        #with:
+          #env: ${{github.sha}}

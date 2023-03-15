@@ -1,0 +1,30 @@
+name: Value's changed check
+
+on:
+  workflow_call:
+    inputs:
+      runnerLabel:
+        required: false
+        type: string
+        default: ubuntu-20.04
+      version:
+        description: 'test'
+        type: string
+        required: true
+jobs:
+  value_changed:
+    if: ${{ github.event.inputs.version }} == 'workflow_dispatch'
+    runs-on: ${{ inputs.runnerLabel }}
+
+    steps:
+      - name: Github Checkout
+        uses: actions/checkout@v3
+
+      - name: Update pubspec.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'pubspec.yaml'
+          propertyPath: 'version'
+          value: ${{ inputs.version }}
+          commitChange: false
+      - run: cat pubspec.yaml

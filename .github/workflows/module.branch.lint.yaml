@@ -1,0 +1,83 @@
+name: Validate branch patterns
+
+on:
+  workflow_call:
+    inputs:
+      runnerLabel:
+        required: false
+        type: string
+        default: ubuntu-20.04
+      event:
+        required: false
+        type: string
+      pr_title:
+        required: false
+        type: string
+
+jobs:
+  pattern_branch_lints:
+    name: Validate refs convention
+    runs-on: ${{ inputs.runnerLabel }}
+    timeout-minutes: 20
+    steps:
+      - name: ':octocat: Checkout repository'
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: ':speak_no_evil: Validate PR Title Convention'
+        if: ${{ inputs.event == 'pull_request' }}
+        run: |
+          #!/bin/bash
+
+          PR_TITLE=`echo "${{ inputs.pr_title }}" | awk '{print tolower($0)}'`
+          PATCH_CHANGES="^(chore|ci|fix|bugfix|patch)[ /(:_-]"
+          MINOR_CHANGES="^(feat|docs|minor)[ /(:_-]"
+          MAJOR_CHANGES="^(breaking|major|!)"
+
+          if [[ $PR_TITLE =~ $MAJOR_CHANGES ]]; then
+            echo "::notice file=.:: Pull request is valid for major/break release type"
+          elif [[ $PR_TITLE =~ $MINOR_CHANGES ]]; then
+            echo "::notice file=.:: Pull request is valid for minor/feature release type"
+          elif [[ $PR_TITLE =~ $PATCH_CHANGES ]]; then
+            echo "::notice file=.:: Pull request is valid for path/fix release type"
+          else
+            echo "::error file=.,title=WRONG_CONVENTIONAL_TITLE::The pull request title doesn't follow the conventional commit standard, it will prevent this PR to become a release"
+            exit 1
+          fi
+
+      - name: ':hear_no_evil:	Validate branch convention'
+        if: ${{ inputs.event == 'push' }}
+        id: branchvalidator
+        run: |
+          echo "INFO - Checking your branch pattern..."
+
+          if [[ ${{ inputs.event }} == 'pull_request' ]]; then
+            BRANCH=${GITHUB_HEAD_REF}
+          else
+            BRANCH=${GITHUB_REF_NAME}
+          fi
+
+          echo "INFO - Branch ${BRANCH}"
+
+          BRANCH_TYPE=""
+          FEATUREBRANCH_REGEX="feature/[a-zA-Z]+-[0-9]+/[a-zA-Z0-9-]+"
+          HOTFIXBRANCH_REGEX="hotfix/[a-zA-Z]+-[0-9]+/[a-zA-Z0-9-]+|hotfix/[a-zA-Z0-9-]+"
+
+          if [[ ${BRANCH} =~ $FEATUREBRANCH_REGEX ]]; then
+            BRANCH_TYPE="feature"
+            echo "::set-output name=branch_type::${BRANCH_TYPE}"
+            echo "::notice file=.::Branch ${BRANCH} is valid for feature branch, progressing..."
+          elif [[ ${BRANCH} =~ $HOTFIXBRANCH_REGEX ]]; then
+            BRANCH_TYPE="hotfix"
+            echo "::set-output name=branch_type::${BRANCH_TYPE}"
+            echo "::notice file=.::Branch ${BRANCH} is valid for feature branch, progressing..."
+          elif [[ ${BRANCH} == "staging" ]]; then
+            BRANCH_TYPE="staging"
+            echo "::set-output name=branch_type::${BRANCH_TYPE}"
+            echo "::notice file=.::Branch ${BRANCH} is valid for staging flow, progressing..."
+          else
+            echo "::error file=.:: Your branch is'nt valid for staging, feature or hotfix branch types, aborting..."
+            exit 1
+          fi
+        shell: bash
